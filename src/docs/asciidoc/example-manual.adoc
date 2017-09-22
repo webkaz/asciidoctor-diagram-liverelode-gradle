@@ -1,0 +1,207 @@
+= Example Manual 
+Doc Writer <doc.writer@example.org>
+2017-09-22
+:revnumber: {project-version}
+:example-caption!:
+ifndef::imagesdir[:imagesdir: images]
+ifndef::sourcedir[:sourcedir: ../java]
+
+This is a user manual for an example project.
+
+
+== Introduction
+
+こんな感じでサクサクかけます。  *一応プレビューで確認する感じ。*
+includeしてる場合は、include先も監視対象とする必要あり。
+
+[NOTE]
+WORDで書くよりははるかに書きやすい気がする。フォーマットもカチッと決まるし。
+
+. スタイルで見た目は調整できるし。(デフォルトのテーマはちょっと間延びする感じ。)
+. WORDの使い方覚えるよりもAsciidocの記法を覚えるほうが簡単な気もする。
+. 欠点は、表や、図が書きにくいこと。画像の貼り付けも以前作った補助ツールがないとめんどい。
+
+NOTE: 補助ツールは、ppt上の図をsvgで保存し、asciidoc内のリンクをクリップボードに生成する仕様だったはず。
+
+TIP: *≪要確認≫最下部の生成タイムスタンプ等のフッターがなければ、bracketsのライブリロードもうまくいくかも。* gradle内の変数が使える
+
+== Graphviz/DOT
+
+.Graphviz 例1
+[plantuml, graphviz, svg]
+--
+digraph foo {
+    node [
+        style=rounded,
+        
+    ]
+    node1 [shape=box]
+    node2 [fillcolor=yellow, style="rounded,filled", shape=diamond]
+    node3 [shape=record, label="{ 日本語 | b | c }"]
+
+    node1 -> node2 -> node3
+}
+
+--
+
+.Graphviz 例2
+[plantuml, graphviz-a, svg]
+--
+digraph G {
+    node [
+        fontname = "MeiryoUI",
+    ]
+    rankdir=LR; 松->竹->梅ｄ
+}
+--
+
+.Graphviz 例3
+[plantuml, graphviz-b, svg]
+--
+digraph graph_name {
+    edge [fontname = "Source Han Code JP"]
+    node [
+        shape = record,
+        fontname = "Source Han Code JP",
+        fontsize = 12,
+    ]
+
+    // node define
+    alpha [label = "<pl>left|center|<pr>right"];
+    beta [label = "<pl>left|<pc>center|<pr>right"];
+    gamma [label = "left|center|<pr>right"];
+    delta [label = "{left|{<pc>center|{top|middle|bottom}}|right}}"];
+    epsilon [label = "{top|<pm>middle|bottom}"];
+
+    // edge define
+    alpha:pl -> beta:pl [ label = "a-b", weight = 2.0];
+    alpha:pr -> gamma:pr [label = "a-g", weight = 1.0];
+    beta:pc -> epsilon:pm [label = "b-e"];
+    gamma -> delta:pc [label = "g-d"];
+}
+--
+
+
+== Plantuml
+
+.クラス図
+[plantuml, classediagram, svg]
+....
+skinparam defaultFontName "MeiryoUI"
+class "クラスA" {
+  +メソッド1()
+}
+class "クラスB" {
+  +メソッド2()
+}
+class "クラスC" {
+}
+class "クラスD" {
+}
+class "クラスE" {
+}
+"クラスA" -- "クラスB"
+"クラスA" <|-- "クラスC"
+"クラスC" <|-- "クラスD"
+"クラスC" <|-- "クラスE"
+....
+
+
+This project does something.
+We just haven't decided what that is yet.
+
+This page was built by the following command:
+
+ $ ./gradlew asciidoctor
+
+
+== Ditaa
+
+You can make http://asciidoctor.org/docs/asciidoctor-diagram/[diagrams in Asciidoctor]
+
+For example, the following:
+
+.Basic ditaa block
+[source]
+----
+[ditaa]
+....
+                   +-------------+
+                   | Asciidoctor |-------+
+                   |   diagram   |       |
+                   +-------------+       | PNG out
+                       ^                 |
+                       | ditaa in        |
+                       |                 v
+ +--------+   +--------+----+    /---------------\
+ |        | --+ Asciidoctor +--> |               |
+ |  Text  |   +-------------+    |   Beautiful   |
+ |Document|   |   !magic!   |    |    Output     |
+ |     {d}|   |             |    |               |
+ +---+----+   +-------------+    \---------------/
+     :                                   ^
+     |          Lots of work             |
+     +-----------------------------------+
+
+
+....
+----
+
+produces
+
+.Basic ditaa block output
+[ditaa]
+----
+                   +-------------+
+                   | Asciidoctor |-------+
+                   |  Diagram    |       |
+                   +-------------+       | PNG out
+                       ^                 |
+                       | ditaa in        |
+                       |                 v
+ +--------+   +--------+----+    /----------------\
+ |        | --+ Asciidoctor +--> |                |
+ |  Text  |   +-------------+    |Beautiful output|
+ |Document|   |   !magic!   |    |                |
+ |     {d}|   |   日本語       |    |                |
+ +---+----+   +-------------+    \----------------/
+     :                                   ^
+     |          Lots of work             |
+     +-----------------------------------+
+
+/--------------------+                                    /------+ /------+
+|                    |                                    |cBLK  | |cBLK  |
+|                    | /--------------+ /---------------+ +------+ +------+
+|       +------+     | |              | |               |
+|       |      |     | |      +-------+ |               | +------+ +------+
+|  cRED |      |     | |      |         |      +--------+ |      | |      |
+|       +------+     | |      +-------+ |      |          |      | |      |
+|                    | |              | |  cYEL|          |      | |      |
+|                    | +--------+     | |      |          |      | |      |
+|       +------+     |          |     | |      +--------+ |cBLK  | | cBLK |
+|       |      |     | +--------+     | |               | |      | |      |
+|       |      |     | |              | |               | |      | |      |
+|       |      |     | |              | |               | |      | |      |
++-------+      +-----+ +--------------+ +---------------+ +------+ +------+
+                       /--------------------+                   /------+
+                       |                    |                   |      |
+                       |                    |                   |      |
+                       |       +------+     | /------+   +------+      +------+
+                       |       |      |     | |      |   |        cYEL        |
+                       |  cRED |      |     | |      |   +------+      +------+
+                       |       +------+     | |      +--------+ |      |
+                       |                    | |               | |      |
+                       |       +------+     | |               | |      |
+                       |       |      |     | |      +--------+ |      |
+                       |       |      |     | |      |          |      |
+                       |       |      |     | |      |          |      |
+                       +-------+      +-----+ +------+          +------+
+
+----
+
+== build.gradle
+
+[source,groovy]
+----
+include::{build-gradle}[]
+----

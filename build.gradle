@@ -1,0 +1,81 @@
+/*
+asciidoctor-gradle-pluginの詳細に関しては以下参照
+http://asciidoctor.org/docs/asciidoctor-gradle-plugin/
+
+PlantUML    画像の生成に Graphvizのインストールが必要となる。
+Grahpviz(PlantUML内) gradle.propertiesに、org.gradle.jvmargs=-Dfile.encoding=UTF-8 を指定すれば日本語OK
+Ditta       上記で日本語使用できるが、ずれるので実用性に欠ける
+その他の記法は、別途それぞれのツールのインストールがされており、OS上で使える状態が前提となる。
+
+.LiveReloadの使い方
+. 2つgitbashを立ち上げる
+. それぞれ、./gradlew -t asciidoctor , ./gradlew live を実行する
+. Live Reloadプラグインをchromeに導入し、ファイルをurlとしてアクセスにチェック
+. ブラウザでbuild/asciidoc配下に生成されているhtmlを開き、Live Reloadのボタンを押下して有効にする。
+
+*/
+
+buildscript {
+    dependencies {
+        //pdfの生成に必要。現時点では日本語がダメ
+        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.15'
+    }
+}
+
+plugins {
+    id 'com.github.jruby-gradle.base' version '1.5.0'
+    id 'org.asciidoctor.convert' version '1.5.3'
+    id 'org.kordamp.gradle.livereload' version '0.2.1'
+    id 'groovy'
+}
+
+version = '1.0.0-SNAPSHOT'
+
+dependencies {
+    //1.5.5 では動作しない。
+    gems 'rubygems:asciidoctor-diagram:1.5.4.1'
+}
+
+asciidoctorj {
+    version = '1.+'
+}
+
+asciidoctor {
+    /*
+    def source = project.sourceSets.main.java.srcDirs[0]
+    def build = file('build.gradle')
+
+    // add extra inputs since these include files that are included
+    inputs.dir source
+    inputs.dir source
+    */
+    
+    //backends = ['html5' ,'pdf']
+    backends = ['html5']
+    dependsOn jrubyPrepare
+    requires = ['asciidoctor-diagram']
+    gemPath = jrubyPrepare.outputDir
+    attributes \
+        'build-gradle': file('build.gradle'),
+        'source-highlighter' : 'coderay',
+        //pdfのときは、ソースがdirの起点となるため以下設定にする必要あり。
+        'imagesdir': "${projectDir}/build/asciidoc/images",
+        //'imagesdir': "../images",
+        'toc': '',
+        'icons': 'font',
+        'setanchors': '',
+        'idprefix': '',
+        'idseparator': '-',
+        'docinfo1': '',
+        //section番号をつける
+        'numbered': true
+}
+//変更がない場合も変換処理を実行する
+//asciidoctor.outputs.upToDateWhen { false }
+liveReload {
+    docRoot asciidoctor.outputDir.canonicalPath
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2'
+}
