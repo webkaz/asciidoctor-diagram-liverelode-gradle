@@ -1,29 +1,59 @@
-= Example Manual 
+= Example Manual 日本語
 Doc Writer <doc.writer@example.org>
 2017-09-22
 :revnumber: {project-version}
 :example-caption!:
 ifndef::imagesdir[:imagesdir: images]
 ifndef::sourcedir[:sourcedir: ../java]
+:stylesheet: style/asciidoctorｄ.css
 
 This is a user manual for an example project.
 
 
 == Introduction
 
-こんな感じでサクサクかけます。  *一応プレビューで確認する感じ。*
+本プロジェクトは、gradle環境でasciidoctor+diagramを利用するためのサンプルです。
 includeしてる場合は、include先も監視対象とする必要あり。
 
-[NOTE]
-WORDで書くよりははるかに書きやすい気がする。フォーマットもカチッと決まるし。
+=== LiveReloadの使い方
 
-. スタイルで見た目は調整できるし。(デフォルトのテーマはちょっと間延びする感じ。)
-. WORDの使い方覚えるよりもAsciidocの記法を覚えるほうが簡単な気もする。
-. 欠点は、表や、図が書きにくいこと。画像の貼り付けも以前作った補助ツールがないとめんどい。
+. 2つgitbashを立ち上げる
+. それぞれ、./gradlew -t asciidoctor , ./gradlew live を実行する
+. Live Reloadプラグインをchromeに導入し、ファイルをurlとしてアクセスにチェック
+. ブラウザでbuild/asciidoc配下に生成されているhtmlを開き、Live Reloadのボタンを押下して有効にする。
+
+=== スタイルの調整
+
+. スタイルは、asciidoctor-stylesheet-factoryで生成する
+.. fontを指定。
+.. bodyを80%に縮小
+.. リストのボトムを詰める(paragraphのボトム)
++
+.リストは詰めすぎか？
+[source,css]
+----
+//追加部分
+$main-font-family: "源ノ明朝 JP", "游明朝", "メイリオ";
+//$main-font-family: "MeiryoUI", "メイリオ";
+$fixed-font-family: "Source Han Code JP";
+$sans-font-family: "メイリオ", "游ゴシック";
+//以下は効かない
+//, "Noto Serif CJK JP", "Noto Sans CJK JP","源ノ角ゴシック", "Noto Sans Mono CJK JP"
+$paragraph-margin-bottom: 0.2em;
+----
+
+=== 雑感
+. WORDの使い方覚えるよりもAsciidocの記法を覚えるほうが楽である。
+. asciidocのほうがwordより構造化しやすい。
+. 欠点は、表や図が書きにくいこと。画像の貼り付けも以前作った *補助ツール* がやはり要る。
 
 NOTE: 補助ツールは、ppt上の図をsvgで保存し、asciidoc内のリンクをクリップボードに生成する仕様だったはず。
 
-TIP: *≪要確認≫最下部の生成タイムスタンプ等のフッターがなければ、bracketsのライブリロードもうまくいくかも。* gradle内の変数が使える
+[TIP]
+--
+* ≪要確認≫最下部の生成タイムスタンプ等のフッターがなければ、bracketsのライブリロードもうまくいくかも。
+* gradle内の変数が使える
+--
 
 == Graphviz/DOT
 
@@ -37,12 +67,13 @@ digraph foo {
     ]
     node1 [shape=box]
     node2 [fillcolor=yellow, style="rounded,filled", shape=diamond]
-    node3 [shape=record, label="{ 日本語 | b | c }"]
+    node3 [shape=record, label="{ 日本語あ | b | c }"]
 
     node1 -> node2 -> node3
 }
 
 --
+
 
 .Graphviz 例2
 [plantuml, graphviz-a, svg]
@@ -84,12 +115,43 @@ digraph graph_name {
 
 == Plantuml
 
+.UML Diagram Example
+[plantuml,uml-example ,svg]
+--
+skinparam defaultFontName "MeiryoUI"
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+  Object[] element日本語
+  size()
+}
+
+enum TimeUnit {
+  DAYS
+  HOURS
+  MINUTES
+}
+
+annotation SuppressWarnings
+--
+
 .クラス図
 [plantuml, classediagram, svg]
 ....
 skinparam defaultFontName "MeiryoUI"
 class "クラスA" {
-  +メソッド1()
+  +メソッド1ｄｄｄｄ()
 }
 class "クラスB" {
   +メソッド2()
@@ -205,3 +267,4 @@ produces
 ----
 include::{build-gradle}[]
 ----
+

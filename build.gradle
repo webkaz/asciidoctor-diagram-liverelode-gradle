@@ -61,14 +61,15 @@ asciidoctor {
         //pdfのときは、ソースがdirの起点となるため以下設定にする必要あり。
         'imagesdir': "${projectDir}/build/asciidoc/images",
         //'imagesdir': "../images",
-        'toc': '',
+        'toc': 'left',
         'icons': 'font',
         'setanchors': '',
         'idprefix': '',
         'idseparator': '-',
         'docinfo1': '',
         //section番号をつける
-        'numbered': true
+        'numbered': true,
+        'stylesheet' : 'style/asciidoctor.css'
 }
 //変更がない場合も変換処理を実行する
 //asciidoctor.outputs.upToDateWhen { false }
